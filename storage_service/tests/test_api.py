@@ -22,7 +22,7 @@ def test_exception_raised_with_invalid_csv(testing_database, invalid_csv_file):
         repository.copy_content_of(invalid_csv_file)
 
 
-def test_OK_RESPONSE_when_sending_valid_file(testing_database, csv_file):
+def test_OK_response_when_sending_valid_file(testing_database, csv_file):
     payload = {"file": ('locations.csv', csv_file, 'multipart/form-data')}
     response = client.post(
         '/uploadcsv/',
@@ -30,3 +30,16 @@ def test_OK_RESPONSE_when_sending_valid_file(testing_database, csv_file):
     )
     assert response.status_code == 200
     assert response.json() == {"filename": "locations.csv"}
+
+
+def test_ERROR_response_when_sending_invalid_file(testing_database,
+                                              invalid_csv_file):
+    payload = {
+        "file": ('locations.csv', invalid_csv_file, 'multipart/form-data')
+    }
+    response = client.post(
+        '/uploadcsv/',
+        files=payload
+    )
+    assert response.status_code == 400
+    assert response.json() == {'detail': 'Incorrect file'}
