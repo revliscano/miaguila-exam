@@ -1,16 +1,37 @@
 from sqlalchemy import (
-    MetaData, String, Table, DECIMAL, Integer, Column
+    MetaData, String, Table, DECIMAL, Integer, Column, create_engine
 )
 
 
-metadata = MetaData()
+DATABASE_URL = 'postgresql://db_user:guama123@localhost/storage_service_db'
 
 
-postcode = Table(
-    'postcodes',
-    metadata,
-    Column('id', Integer(), primary_key=True),
-    Column('code', String(), default=''),
-    Column('latitude', DECIMAL(8, 6), nullable=False),
-    Column('longitude', DECIMAL(9, 6), nullable=False),
-)
+class DataAccessLayer:
+    engine = None
+    conn_string = None
+    metadata = MetaData()
+    connection = None
+
+    postcode = Table(
+        'postcodes',
+        metadata,
+        Column('id', Integer(), primary_key=True),
+        Column('code', String(), default=''),
+        Column('latitude', DECIMAL(8, 6), nullable=False),
+        Column('longitude', DECIMAL(9, 6), nullable=False),
+    )
+
+    def db_init(self, conn_string=DATABASE_URL):
+        self.engine = create_engine(conn_string or self.conn_string)
+        self.metadata.create_all(self.engine)
+        self.connection = self.engine.connect()
+
+    def close_connection(self):
+        self.connection.close()
+
+    @property
+    def raw_connection(self):
+        return self.engine.raw_connection()
+
+
+data_access_layer = DataAccessLayer()
