@@ -1,0 +1,7 @@
+venv/
+test_list.txt
+*.pyc
+__pycache__/
+postcodesgeo.csv
+miaguila_exam.sublime-project
+miaguila_exam.sublime-workspace
