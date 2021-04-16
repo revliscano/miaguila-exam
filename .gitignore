@@ -5,3 +5,5 @@ __pycache__/
 postcodesgeo.csv
 miaguila_exam.sublime-project
 miaguila_exam.sublime-workspace
+notes.txt
+.pytest_cache
