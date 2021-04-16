@@ -4,10 +4,10 @@ from psycopg2.errors import BadCopyFileFormat
 from database.repository import Repository
 
 
-postcodes = APIRouter()
+locations = APIRouter()
 
 
-@postcodes.post('/uploadcsv/')
+@locations.post('/uploadcsv/')
 async def upload_csvfile(file: UploadFile = File(...)):
     try:
         repository = Repository()

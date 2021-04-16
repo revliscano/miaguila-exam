@@ -3,7 +3,7 @@ from sqlalchemy import (
 )
 
 
-DATABASE_URL = 'postgresql://db_user:guama123@localhost/storage_service_db'
+DATABASE_URL = 'postgresql://miaguila:miaguila@localhost/storage_service_db'
 
 
 class DataAccessLayer:
@@ -12,8 +12,8 @@ class DataAccessLayer:
     metadata = MetaData()
     connection = None
 
-    postcode = Table(
-        'postcodes',
+    locations = Table(
+        'locations',
         metadata,
         Column('id', Integer(), primary_key=True),
         Column('code', String(), default=''),

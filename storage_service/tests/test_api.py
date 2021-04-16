@@ -3,7 +3,9 @@ from fastapi.testclient import TestClient
 
 from main import app
 from database.repository import Repository
-from .conftests import csv_file, invalid_csv_file, testing_database
+from .conftests import (
+    csv_file, invalid_csv_file, testing_database, CSV_LENGTH
+)
 from psycopg2.errors import BadCopyFileFormat
 
 
@@ -13,7 +15,7 @@ client = TestClient(app)
 def test_copy_csv_to_database(testing_database, csv_file):
     repository = Repository()
     repository.copy_content_of(csv_file)
-    assert len(repository) == 3
+    assert len(repository) == CSV_LENGTH
 
 
 def test_exception_raised_with_invalid_csv(testing_database, invalid_csv_file):
@@ -33,7 +35,7 @@ def test_OK_response_when_sending_valid_file(testing_database, csv_file):
 
 
 def test_ERROR_response_when_sending_invalid_file(testing_database,
-                                              invalid_csv_file):
+                                                  invalid_csv_file):
     payload = {
         "file": ('locations.csv', invalid_csv_file, 'multipart/form-data')
     }
