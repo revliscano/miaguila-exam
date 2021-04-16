@@ -3,11 +3,8 @@ from .setup import data_access_layer
 
 
 class Repository:
-    def __init__(self, data_access_layer=data_access_layer):
-        self.database = data_access_layer
-
     def copy_content_of(self, file):
-        raw_connection = self.database.raw_connection
+        raw_connection = data_access_layer.raw_connection
         cursor = raw_connection.cursor()
         command = (
             'COPY postcodes(latitude, longitude) '
@@ -17,9 +14,9 @@ class Repository:
         raw_connection.commit()
 
     def __len__(self):
-        count = select((func.count(),)).select_from(
-            self.database.postcode
+        count_command = select((func.count(),)).select_from(
+            data_access_layer.postcode
         )
-        result = self.database.connection.execute(count)
+        result = data_access_layer.connection.execute(count_command)
         count, = result.fetchone()
         return count

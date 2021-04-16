@@ -3,7 +3,7 @@ from io import StringIO
 import pytest
 import testing.postgresql
 
-from database.setup import DataAccessLayer
+from database.setup import data_access_layer
 
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
@@ -12,7 +12,6 @@ Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
 @pytest.fixture(scope='session')
 def testing_database():
     postgres = Postgresql()
-    data_access_layer = DataAccessLayer()
     data_access_layer.db_init(postgres.url())
     yield data_access_layer
     postgres.stop()
@@ -38,4 +37,3 @@ def invalid_csv_file():
         '50.871446,-0.729985\r\n'
     )
     return file
-
