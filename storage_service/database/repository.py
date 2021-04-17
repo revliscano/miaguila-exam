@@ -1,4 +1,5 @@
 from sqlalchemy import select, func
+from sqlalchemy.sql.expression import bindparam
 from database.setup import data_access_layer
 
 
@@ -17,14 +18,30 @@ class Repository:
         raw_connection.commit()
 
     def fetch_locations_without_postcodes(self):
-        code_field = self.table.c.code
+        postcode_field = self.table.c.postcode
         result = data_access_layer.connection.execute(
             self.table
             .select()
-            .where(func.coalesce(code_field, '') == '')
+            .where(func.coalesce(postcode_field, '') == '')
             .limit(100)
         ).fetchall()
         return result
+
+    def update(self, locations):
+        latitude_field = self.table.c.latitude
+        longitude_field = self.table.c.longitude
+        data_access_layer.connection.execute(
+            self.table
+            .update()
+            .where(
+                latitude_field == bindparam('_latitude')
+                and longitude_field == bindparam('_longitude')
+            )
+            .values(
+                {'postcode': bindparam('postcode')}
+            ),
+            locations
+        )
 
     def __len__(self):
         count_command = select((func.count(),)).select_from(

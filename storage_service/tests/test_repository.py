@@ -2,7 +2,7 @@ import pytest
 from database.repository import Repository
 from .conftests import (
     csv_file, invalid_csv_file, testing_database, CSV_LENGTH,
-    populated_testing_database
+    populated_testing_database, locations_to_update
 )
 from psycopg2.errors import BadCopyFileFormat
 
@@ -23,3 +23,12 @@ def test_retrieves_100_rows_batch(populated_testing_database):
     repository = Repository()
     batch = repository.fetch_locations_without_postcodes()
     assert len(batch) == 100
+
+
+def test_update_rows(locations_to_update):
+    repository = Repository()
+    repository.update(locations_to_update)
+    rows_without_postcodes = len(
+        repository.fetch_locations_without_postcodes()
+    )
+    assert rows_without_postcodes == CSV_LENGTH - len(locations_to_update)

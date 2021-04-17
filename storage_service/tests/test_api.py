@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 
 from main import app
 from .conftests import (
-    csv_file, invalid_csv_file, testing_database
+    csv_file, invalid_csv_file, testing_database, populated_testing_database
 )
 
 
@@ -30,3 +30,18 @@ def test_ERROR_response_when_sending_invalid_file(testing_database,
     )
     assert response.status_code == 400
     assert response.json() == {'detail': 'Incorrect file'}
+
+
+def test_OK_reponse_when_fetching_rows_without_postcodes(populated_testing_database):
+    response = client.get('/without-postcodes/')
+    retrieved_rows = len(response.json())
+    assert response.status_code == 200
+    assert retrieved_rows == 100
+
+
+def test_OK_reponse_when_fetching_rows_without_postcodes(testing_database):
+    response = client.get('/without-postcodes/')
+    assert response.status_code == 404
+    assert response.json() == {
+        'detail': 'No locations without postcodes were found'
+    }

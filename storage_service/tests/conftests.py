@@ -6,13 +6,14 @@ import psycopg2
 import testing.postgresql
 
 from database.setup import data_access_layer
+from database.repository import Repository
 
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
 CSV_LENGTH = 101
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def testing_database():
     postgres = Postgresql()
     data_access_layer.db_init(postgres.url())
@@ -72,3 +73,17 @@ def populated_testing_database():
     connection.commit()
     yield data_access_layer
     postgres.stop()
+
+
+@pytest.fixture(scope='function')
+def locations_to_update(populated_testing_database):
+    repository = Repository()
+    locations = repository.fetch_locations_without_postcodes()
+    return [
+        {
+            '_latitude': location.latitude,
+            '_longitude': location.longitude,
+            'postcode': 'AB11 2CD'
+        }
+        for location in locations
+    ]
