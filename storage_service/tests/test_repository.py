@@ -21,5 +21,5 @@ def test_exception_raised_with_invalid_csv(testing_database, invalid_csv_file):
 
 def test_retrieves_100_rows_batch(populated_testing_database):
     repository = Repository()
-    batch = repository.fetch_batch_with_null_postcode()
+    batch = repository.fetch_locations_without_postcodes()
     assert len(batch) == 100

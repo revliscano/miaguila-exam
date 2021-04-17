@@ -16,7 +16,7 @@ class Repository:
         cursor.copy_expert(command, file)
         raw_connection.commit()
 
-    def fetch_batch_with_null_postcode(self):
+    def fetch_locations_without_postcodes(self):
         code_field = self.table.c.code
         result = data_access_layer.connection.execute(
             self.table
