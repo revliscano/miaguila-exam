@@ -1,9 +1,10 @@
+import os
 from sqlalchemy import (
     MetaData, String, Table, DECIMAL, Integer, Column, create_engine
 )
 
 
-DATABASE_URL = 'postgresql://miaguila:miaguila@localhost/storage_service_db'
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 
 class DataAccessLayer:
