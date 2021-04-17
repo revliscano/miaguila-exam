@@ -8,4 +8,4 @@ from api.views import postcodes
 
 
 app = FastAPI()
-app.include_router(locations, prefix='/api/v1/postcodes', tags=['postcodes'])
+app.include_router(postcodes, prefix='/api/v1/postcodes', tags=['postcodes'])
