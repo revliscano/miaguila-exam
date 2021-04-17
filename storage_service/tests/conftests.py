@@ -29,17 +29,6 @@ def csv_file():
     return StringIO(header + rows)
 
 
-@pytest.fixture(scope='function')
-def invalid_csv_file():
-    file = StringIO(
-        'lat,lon\r\n'
-        '52.923454,-1.474217\r\n'
-        '0\r\n'
-        '50.871446,-0.729985\r\n'
-    )
-    return file
-
-
 def get_random_latitude():
     decimal_part = round(random.random(), ndigits=6)
     integer_part = random.randint(50, 54)
@@ -50,3 +39,14 @@ def get_random_longitude():
     decimal_part = round(random.random(), ndigits=6)
     integer_part = random.randint(-6, -1)
     return integer_part + decimal_part
+
+
+@pytest.fixture(scope='function')
+def invalid_csv_file():
+    file = StringIO(
+        'lat,lon\r\n'
+        '52.923454,-1.474217\r\n'
+        '0\r\n'
+        '50.871446,-0.729985\r\n'
+    )
+    return file
