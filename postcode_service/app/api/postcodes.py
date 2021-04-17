@@ -1,11 +1,36 @@
+import os
+
 import requests
+import httpx
 
 
-def include_postcodes(locations):
-    payload = {'geolocations': locations}
+STORAGE_SERVICE_HOST_URL = 'http://localhost:8002/api/v1/locations/'
+url = os.environ.get('STORAGE_SERVICE_HOST_URL') or STORAGE_SERVICE_HOST_URL
+
+
+def put_postcodes_to_locations():
+    locations_without_postcodes = fetch_from_storage_service()
+    locations_with_postcodes = include_postcodes(locations_without_postcodes)
+    call_storage_service_update(locations_with_postcodes)
+
+
+def fetch_from_storage_service():
+    response = httpx.get(f'{url}without-postcodes')
+    return response.json()
+
+
+def call_storage_service_update(locations_with_postcodes):
+    httpx.put(
+        f'{url}update/',
+        json=locations_with_postcodes
+    )
+
+
+def include_postcodes(locations_without_postcodes):
+    payload = {'geolocations': locations_without_postcodes}
     response = call_postcodesapi(payload)
     if not response:
-        raise ConnectionError("Couldn't get an expected response")
+        raise Exception("Couldn't get an expected response")
     return get_locations_with_postcodes(response)
 
 
