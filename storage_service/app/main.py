@@ -1,5 +1,9 @@
-from fastapi import FastAPI
+import sys
+import os
 
+sys.path.append(os.path.dirname(__file__))
+
+from fastapi import FastAPI
 from api.views import locations
 from database.setup import data_access_layer
 
