@@ -27,8 +27,9 @@ def test_retrieves_100_rows_batch(populated_testing_database):
 
 def test_update_rows(locations_to_update):
     repository = Repository()
-    repository.update(locations_to_update)
+    number_of_updated_rows = repository.update(locations_to_update)
     rows_without_postcodes = len(
         repository.fetch_locations_without_postcodes()
     )
+    assert number_of_updated_rows == 100
     assert rows_without_postcodes == CSV_LENGTH - len(locations_to_update)

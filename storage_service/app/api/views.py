@@ -33,3 +33,10 @@ async def fetch_locations_without_postcodes():
         )
 
     return locations
+
+
+@locations.put('/update/')
+async def update_locations(locations: List[dict]):
+    repository = Repository()
+    locations_updated = repository.update(locations)
+    return {'message': f'{locations_updated} rows updated'}

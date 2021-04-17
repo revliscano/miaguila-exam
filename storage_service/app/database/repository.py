@@ -30,18 +30,19 @@ class Repository:
     def update(self, locations):
         latitude_field = self.table.c.latitude
         longitude_field = self.table.c.longitude
-        data_access_layer.connection.execute(
+        result = data_access_layer.connection.execute(
             self.table
             .update()
             .where(
-                latitude_field == bindparam('_latitude')
-                and longitude_field == bindparam('_longitude')
+                latitude_field == bindparam('lat')
+                and longitude_field == bindparam('long')
             )
             .values(
                 {'postcode': bindparam('postcode')}
             ),
             locations
         )
+        return result.rowcount
 
     def __len__(self):
         count_command = select((func.count(),)).select_from(

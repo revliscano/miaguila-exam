@@ -81,8 +81,8 @@ def locations_to_update(populated_testing_database):
     locations = repository.fetch_locations_without_postcodes()
     return [
         {
-            '_latitude': location.latitude,
-            '_longitude': location.longitude,
+            'lat': float(location.latitude),
+            'long': float(location.longitude),
             'postcode': 'AB11 2CD'
         }
         for location in locations

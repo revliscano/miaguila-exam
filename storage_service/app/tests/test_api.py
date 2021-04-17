@@ -2,7 +2,8 @@ from fastapi.testclient import TestClient
 
 from main import app
 from .conftests import (
-    csv_file, invalid_csv_file, testing_database, populated_testing_database
+    csv_file, invalid_csv_file, testing_database, populated_testing_database,
+    locations_to_update
 )
 
 
@@ -45,3 +46,9 @@ def test_OK_reponse_when_fetching_rows_without_postcodes(testing_database):
     assert response.json() == {
         'detail': 'No locations without postcodes were found'
     }
+
+
+def test_OK_response_when_updating_locations(locations_to_update):
+    response = client.put('/update/', json=locations_to_update)
+    assert response.status_code == 200
+    assert response.json() == {'message': '100 rows updated'}
