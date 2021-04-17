@@ -2,13 +2,14 @@ from io import StringIO
 import random
 
 import pytest
+import psycopg2
 import testing.postgresql
 
 from database.setup import data_access_layer
 
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
-CSV_LENGTH = 10
+CSV_LENGTH = 101
 
 
 @pytest.fixture(scope='session')
@@ -21,6 +22,10 @@ def testing_database():
 
 @pytest.fixture(scope='function')
 def csv_file():
+    return generate_random_csv_file()
+
+
+def generate_random_csv_file():
     header = 'lat,long\r\n'
     rows = '\r\n'.join(
         f'{get_random_latitude()}, {get_random_longitude()}'
@@ -50,3 +55,20 @@ def invalid_csv_file():
         '50.871446,-0.729985\r\n'
     )
     return file
+
+
+@pytest.fixture(scope='session')
+def populated_testing_database():
+    postgres = Postgresql()
+    data_access_layer.db_init(postgres.url())
+    connection = psycopg2.connect(**postgres.dsn())
+    cursor = connection.cursor()
+    csv_file = generate_random_csv_file()
+    command = (
+        'COPY locations(latitude, longitude) '
+        'FROM STDIN WITH (FORMAT CSV, HEADER TRUE)'
+    )
+    cursor.copy_expert(command, csv_file)
+    connection.commit()
+    yield data_access_layer
+    postgres.stop()
