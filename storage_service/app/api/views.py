@@ -32,5 +32,5 @@ def add_postcodes_to_locations(rows_left):
             repository.fetch_locations_without_postcodes()
         )
         locations_with_postcodes = get_postcodes_for(locations)
-        locations_updated = repository.update(locations_with_postcodes)
-        rows_left -= locations_updated
+        rows_updated = repository.update(locations_with_postcodes)
+        rows_left -= rows_updated
