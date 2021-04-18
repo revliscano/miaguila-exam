@@ -15,13 +15,14 @@ client = TestClient(app)
 
 
 def test_OK_response_when_sending_valid_file(testing_database, csv_file):
-    payload = {"file": ('locations.csv', csv_file, 'multipart/form-data')}
-    response = client.post(
-        f'{API_PREFIX}/uploadcsv/',
-        files=payload
-    )
-    assert response.status_code == 202
-    assert response.json() == {"message": f"{CSV_LENGTH} rows copied"}
+    with mock.patch('api.views.add_postcodes_to_locations') as mocked_backgroud_task:
+        payload = {"file": ('locations.csv', csv_file, 'multipart/form-data')}
+        response = client.post(
+            f'{API_PREFIX}/uploadcsv/',
+            files=payload
+        )
+        assert response.status_code == 202
+        assert response.json() == {"message": f"{CSV_LENGTH} rows copied"}
 
 
 def test_ERROR_response_when_sending_invalid_file(testing_database,

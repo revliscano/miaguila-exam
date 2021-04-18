@@ -1,4 +1,3 @@
-from httpx import ConnectError
 from fastapi import (
     APIRouter, UploadFile, File, HTTPException, BackgroundTasks
 )
@@ -32,9 +31,6 @@ def add_postcodes_to_locations(rows_left):
         locations = get_list_of_locations(
             repository.fetch_locations_without_postcodes()
         )
-        try:
-            locations_with_postcodes = get_postcodes_for(locations)
-        except ConnectError:
-            break
+        locations_with_postcodes = get_postcodes_for(locations)
         locations_updated = repository.update(locations_with_postcodes)
         rows_left -= locations_updated
