@@ -10,7 +10,7 @@ services:
       - 8001:8000
     environment:
       - DATABASE_URL=postgresql://miaguila:miaguila@storage_service_db/storage_service_db
-      - POSTCODE_SERVICE_HOST_URL=http://postcode_service:8000/api/v1/casts/
+      - POSTCODE_SERVICE_HOST_URL=http://postcode_service:8000/api/v1/postcodes/
 
   storage_service_db:
     image: postgres:12.1-alpine
