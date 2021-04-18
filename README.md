@@ -36,8 +36,10 @@
 
 ## Más información
 
-Este examen lo realicé con el framework FastAPI y se utilizó como motor de base de datos, PostgreSQL. 
+Este examen lo realicé con el framework FastAPI y se utilizó, como motor de base de datos, PostgreSQL. 
 
-Se escogió PostgreSQL debido a que permite copiar millones de registros provenientes de un CSV, de manera mucho más veloz que haciendo inserts.
+Se escogió PostgreSQL debido a que permite copiar millones de registros provenientes de un CSV, de manera mucho más veloz que haciendo INSERTs.
 
-La comunicación entrelos microservicios se realiza a través de HTTP (especfíciamente mediante el endpoint `POST: /api/v1/postcodes/combine/` del servicio Postcode Service. Esta se lleva a cabo de manera asíncrona a la subida de archivos por parte del usuario, gracias al soporte de tareas en segundo plano (BackgroundTasks) que FastAPI ofrece.
+La comunicación entre los microservicios se realiza a través de HTTP (especfíciamente mediante el endpoint `POST: /api/v1/postcodes/combine/` del servicio Postcode Service. Esta se lleva a cabo de manera asíncrona a la subida de archivos por parte del usuario, gracias al soporte de tareas en segundo plano (BackgroundTasks) que FastAPI ofrece.
+
+El endpoint `POST: https://api.postcodes.io/` de La API de postcodes.io, limita el número de geolocalizaciones de entrada (100 máximo). Debido a esto, realicé un límite similar en la consulta que se hace a la base de datos de Storage Service. De esta manera, se van pidiendo lotes de 100 registros a la base de datos, los cuales son continuamente enviados al Postcode Service.
