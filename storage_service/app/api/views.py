@@ -10,12 +10,12 @@ from api.models import LocationOut
 locations = APIRouter()
 
 
-@locations.post('/uploadcsv/')
+@locations.post('/uploadcsv/', status_code=202)
 async def upload_csvfile(file: UploadFile = File(...)):
     try:
         repository = Repository()
-        repository.copy_content_of(file.file)
-        return {"filename": file.filename}
+        rows_copied = repository.copy_content_of(file.file)
+        return {"message": f"{rows_copied} rows copied"}
     except BadCopyFileFormat:
         raise HTTPException(
             status_code=400, detail="Incorrect file"

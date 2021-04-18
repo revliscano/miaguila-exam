@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from main import app, API_PREFIX
 from .conftests import (
     csv_file, invalid_csv_file, testing_database, populated_testing_database,
-    locations_to_update
+    locations_to_update, CSV_LENGTH
 )
 
 
@@ -16,8 +16,8 @@ def test_OK_response_when_sending_valid_file(testing_database, csv_file):
         f'{API_PREFIX}/uploadcsv/',
         files=payload
     )
-    assert response.status_code == 200
-    assert response.json() == {"filename": "locations.csv"}
+    assert response.status_code == 202
+    assert response.json() == {"message": f"{CSV_LENGTH} rows copied"}
 
 
 def test_ERROR_response_when_sending_invalid_file(testing_database,

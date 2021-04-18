@@ -16,6 +16,7 @@ class Repository:
         )
         cursor.copy_expert(command, file)
         raw_connection.commit()
+        return cursor.rowcount
 
     def fetch_locations_without_postcodes(self):
         postcode_field = self.table.c.postcode
