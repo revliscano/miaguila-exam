@@ -26,7 +26,6 @@ async def upload_csvfile(background_tasks: BackgroundTasks,
 
 
 def add_postcodes_to_locations(rows_left):
-    print('BACKGROUND TASK')
     while rows_left > 0:
         repository = Repository()
         locations = get_list_of_locations(

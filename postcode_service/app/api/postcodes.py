@@ -10,7 +10,10 @@ def include_postcodes(locations_without_postcodes):
 
 
 def call_postcodesapi(payload):
-    url = 'https://api.postcodes.io/postcodes?limit=1&filter=postcode'
+    url = (
+        'https://api.postcodes.io/postcodes?'
+        'limit=1&filter=postcode&widesearch=true'
+    )
     response = requests.post(
         url,
         json=payload,
