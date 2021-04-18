@@ -10,7 +10,7 @@ from database.repository import Repository
 
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
-CSV_LENGTH = 101
+CSV_LENGTH = 100
 
 
 @pytest.fixture(scope='function')
@@ -58,7 +58,7 @@ def invalid_csv_file():
     return file
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def populated_testing_database():
     postgres = Postgresql()
     data_access_layer.db_init(postgres.url())

@@ -1,6 +1,10 @@
+from unittest import mock
+
 from fastapi.testclient import TestClient
 
 from main import app, API_PREFIX
+from database.repository import Repository
+from api.views import add_postcodes_to_locations
 from .conftests import (
     csv_file, invalid_csv_file, testing_database, populated_testing_database,
     locations_to_update, CSV_LENGTH
@@ -33,22 +37,12 @@ def test_ERROR_response_when_sending_invalid_file(testing_database,
     assert response.json() == {'detail': 'Incorrect file'}
 
 
-def test_OK_reponse_when_fetching_rows_without_postcodes(populated_testing_database):
-    response = client.get(f'{API_PREFIX}/without-postcodes/')
-    retrieved_rows = len(response.json())
-    assert response.status_code == 200
-    assert retrieved_rows == 100
-
-
-def test_OK_reponse_when_fetching_rows_without_postcodes(testing_database):
-    response = client.get(f'{API_PREFIX}/without-postcodes/')
-    assert response.status_code == 404
-    assert response.json() == {
-        'detail': 'No locations without postcodes were found'
-    }
-
-
-def test_OK_response_when_updating_locations(locations_to_update):
-    response = client.put(f'{API_PREFIX}/update/', json=locations_to_update)
-    assert response.status_code == 200
-    assert response.json() == {'message': '100 rows updated'}
+def test_backgroundtask(locations_to_update):
+    with mock.patch('api.services.httpx') as mocked_httpx:
+        mocked_httpx.post.return_value.json.return_value = locations_to_update
+        add_postcodes_to_locations(CSV_LENGTH)
+        repository = Repository()
+        locations_without_postcodes = (
+            repository.fetch_locations_without_postcodes()
+        )
+        assert len(locations_without_postcodes) == 0

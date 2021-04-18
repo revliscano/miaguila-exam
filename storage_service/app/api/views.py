@@ -1,20 +1,24 @@
-from typing import List
-
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from httpx import ConnectError
+from fastapi import (
+    APIRouter, UploadFile, File, HTTPException, BackgroundTasks
+)
 from psycopg2.errors import BadCopyFileFormat
 
 from database.repository import Repository
-from api.models import LocationOut
+from api.utils import get_list_of_locations
+from api.services import get_postcodes_for
 
 
 locations = APIRouter()
 
 
 @locations.post('/uploadcsv/', status_code=202)
-async def upload_csvfile(file: UploadFile = File(...)):
+async def upload_csvfile(background_tasks: BackgroundTasks,
+                         file: UploadFile = File(...)):
     try:
         repository = Repository()
         rows_copied = repository.copy_content_of(file.file)
+        background_tasks.add_task(add_postcodes_to_locations, rows_copied)
         return {"message": f"{rows_copied} rows copied"}
     except BadCopyFileFormat:
         raise HTTPException(
@@ -22,21 +26,15 @@ async def upload_csvfile(file: UploadFile = File(...)):
         )
 
 
-@locations.get('/without-postcodes/', response_model=List[LocationOut])
-async def fetch_locations_without_postcodes():
-    repository = Repository()
-    locations = repository.fetch_locations_without_postcodes()
-
-    if not locations:
-        raise HTTPException(
-            status_code=404, detail="No locations without postcodes were found"
+def add_postcodes_to_locations(rows_left):
+    while rows_left > 0:
+        repository = Repository()
+        locations = get_list_of_locations(
+            repository.fetch_locations_without_postcodes()
         )
-
-    return locations
-
-
-@locations.put('/update/')
-async def update_locations(locations: List[dict]):
-    repository = Repository()
-    locations_updated = repository.update(locations)
-    return {'message': f'{locations_updated} rows updated'}
+        try:
+            locations_with_postcodes = get_postcodes_for(locations)
+        except ConnectError:
+            break
+        locations_updated = repository.update(locations_with_postcodes)
+        rows_left -= locations_updated
