@@ -1,5 +1,6 @@
 from unittest import mock
 
+import pytest
 from fastapi.testclient import TestClient
 
 from main import app, API_PREFIX
@@ -39,11 +40,19 @@ def test_ERROR_response_when_sending_invalid_file(testing_database,
 
 
 def test_backgroundtask(locations_to_update):
-    with mock.patch('api.services.httpx') as mocked_httpx:
-        mocked_httpx.post.return_value.json.return_value = locations_to_update
+    with mock.patch('api.services.requests') as mocked_requests:
+        mocked_requests.post.return_value.json.return_value = locations_to_update
         add_postcodes_to_locations(CSV_LENGTH)
         repository = Repository()
         locations_without_postcodes = (
             repository.fetch_locations_without_postcodes()
         )
         assert len(locations_without_postcodes) == 0
+
+
+class MockResponse:
+    def __init__(self, data):
+        self.data = data
+
+    def json(self):
+        return self.data

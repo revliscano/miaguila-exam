@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  storage_service:
+    build: ./storage_service
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - ./storage_service/:/app/
+    ports:
+      - 8001:8000
+    environment:
+      - DATABASE_URL=postgresql://miaguila:miaguila@storage_service_db/storage_service_db
+      - POSTCODE_SERVICE_HOST_URL=http://postcode_service:8000/api/v1/casts/
+
+  storage_service_db:
+    image: postgres:12.1-alpine
+    volumes:
+      - postgres_data_miaguila:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=miaguila
+      - POSTGRES_PASSWORD=miaguila
+      - POSTGRES_DB=storage_service_db
+
+  postcode_service:
+    build: ./postcode_service
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - ./postcode_service/:/app/
+    ports:
+      - 8002:8000
+
+volumes:
+  postgres_data_miaguila:

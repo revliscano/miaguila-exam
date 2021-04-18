@@ -1,11 +1,11 @@
 import os
-import httpx
+import requests
 
 
 POSTCODE_SERVICE_HOST_URL = 'http://localhost:8001/api/v1/postcodes/'
-url = os.environ.get('POSTCODE_SERVICE_HOST_URL') or POSTCODE_SERVICE_HOST_URL
+url = os.getenv('POSTCODE_SERVICE_HOST_URL') or POSTCODE_SERVICE_HOST_URL
 
 
 def get_postcodes_for(locations):
-    response = httpx.post(f'{url}combine/', json=locations)
+    response = requests.post(f'{url}combine/', json=locations)
     return response.json()
